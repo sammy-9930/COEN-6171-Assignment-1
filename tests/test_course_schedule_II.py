@@ -1,5 +1,7 @@
 import pytest
+import csv
 import re
+import ast
 
 from src.course_schedule.course_schedule_II import CourseScheduleII
 
@@ -89,3 +91,52 @@ class TestCourseScheduleII:
         scheduler.add_prerequisite(1, 0)
         scheduler.add_prerequisite(0, 1)
         assert scheduler.findOrder(scheduler.numCourses, scheduler.prerequisites) == []  # Empty list indicates impossible ordering
+
+    def test_find_order_dag(self, scheduler):
+        """Test with a valid Directed Acyclic Graph (DAG)."""
+        scheduler.set_number_of_courses(6)
+        scheduler.add_prerequisite(1, 0)
+        scheduler.add_prerequisite(2, 1)
+        scheduler.add_prerequisite(3, 2)
+        scheduler.add_prerequisite(4, 2)
+        scheduler.add_prerequisite(5, 3)
+        order = scheduler.findOrder(scheduler.numCourses, scheduler.prerequisites)
+        
+        # Ensure prerequisites appear before dependent courses
+        assert order.index(0) < order.index(1)
+        assert order.index(1) < order.index(2)
+        assert order.index(2) < order.index(3)
+        assert order.index(2) < order.index(4)
+        assert order.index(3) < order.index(5)
+
+    def test_find_order_disconnected_graph(self, scheduler):
+        """Test with a disconnected graph (some courses have no dependencies)."""
+        scheduler.set_number_of_courses(4)
+        scheduler.add_prerequisite(1, 0)
+        scheduler.add_prerequisite(2, 0)
+        # Course 3 has no prerequisites
+        order = scheduler.findOrder(scheduler.numCourses, scheduler.prerequisites)
+        
+        # Ensure prerequisites appear before dependent courses
+        assert order.index(0) < order.index(1)
+        assert order.index(0) < order.index(2)
+        assert 3 in order  # Disconnected course should still be present
+    
+    def test_find_order_multiple_cycles(self, scheduler):
+        """Test with multiple cycles in the graph."""
+        scheduler.set_number_of_courses(4)
+        scheduler.add_prerequisite(1, 0)
+        scheduler.add_prerequisite(0, 2)
+        scheduler.add_prerequisite(2, 1)  # First cycle: 0 -> 2 -> 1 -> 0
+        scheduler.add_prerequisite(3, 1)
+        scheduler.add_prerequisite(1, 3)  # Second cycle: 1 -> 3 -> 1
+        
+        assert scheduler.findOrder(scheduler.numCourses, scheduler.prerequisites) == []  # No valid order
+    
+    def test_find_order_no_prerequisites(self, scheduler):
+        """Test when there are no prerequisites."""
+        scheduler.set_number_of_courses(3)
+        order = scheduler.findOrder(scheduler.numCourses, scheduler.prerequisites)
+        
+        # Any valid topological sort is acceptable
+        assert set(order) == {0, 1, 2}
