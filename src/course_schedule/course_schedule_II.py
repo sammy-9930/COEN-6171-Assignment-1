@@ -1,5 +1,5 @@
 from typing import List 
-
+ 
 class CourseScheduleII:
     MIN_COURSES = 1
     MAX_COURSES = 2000
@@ -54,6 +54,7 @@ class CourseScheduleII:
             raise e
         return True
         
+        
     def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
         """
         Find a valid course ordering that satisfies all prerequisites.
@@ -73,7 +74,7 @@ class CourseScheduleII:
             if crs in cycle:
                 return False 
             if crs in visit:
-                return True 
+                return True
             
             cycle.add(crs)
             for pre in prereq[crs]:
@@ -88,8 +89,3 @@ class CourseScheduleII:
             if dfs(c) == False:
                 return []
         return output 
-
-
-
-
-        
