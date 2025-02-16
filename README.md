@@ -13,8 +13,9 @@ python -m venv .venv
 .\.venv\Scripts\Activate
 ```
 
-## Running Tests
+## Running Tests and coverage 
 ```bash
 pip install -r requirements.txt
 python -m pytest tests/
+pytest --cov=src/course_schedule --cov-report=term-missing
 ```
