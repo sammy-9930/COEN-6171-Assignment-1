@@ -1,10 +1,10 @@
 .PHONY: test unit-tests clean coverage help
 
 test unit-tests:  ## Run unit tests
-	python -m pytest -v tests/test_course_schedule_II.py
+	python -m pytest -v tests/
 
 coverage:  ## Run tests with coverage report
-	python -m pytest --cov=src/course_schedule tests/
+	pytest --cov=src/course_schedule --cov-report=term-missing
 
 clean:  ## Remove Python cache files
 	find . -type d -name "__pycache__" -exec rm -r {} +
